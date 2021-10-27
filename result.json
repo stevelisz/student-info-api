@@ -4,7 +4,7 @@
       "id": 1,
       "name": "A",
       "totalAverage": 72.03,
-      "Courses": [
+      "courses": [
         {
           "id": 1,
           "name": "Biology",
@@ -29,7 +29,7 @@
       "id": 2,
       "name": "B",
       "totalAverage": 62.15,
-      "Courses": [
+      "courses": [
         {
           "id": 1,
           "name": "Biology",
@@ -48,7 +48,7 @@
       "id": 3,
       "name": "C",
       "totalAverage": 72.03,
-      "Courses": [
+      "courses": [
         {
           "id": 1,
           "name": "Biology",
