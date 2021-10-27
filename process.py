@@ -28,7 +28,7 @@ def constructJsonValue(studentCSV):
     return students
 
 
-# [student_id  test_id  mark  course_id  weight     name  teacher
+# [   student_id  test_id  mark  course_id  weight     name  teacher
 # 0           1        1    78          1      10  Biology    Mr. D
 # 1           1        7    40          3      10     Math   Mrs. C
 # 2           1        6    78          3      90     Math   Mrs. C
@@ -36,13 +36,13 @@ def constructJsonValue(studentCSV):
 # 4           1        3    95          1      50  Biology    Mr. D
 # 5           1        4    32          2      40  History   Mrs. P
 # 6           1        2    87          1      40  Biology    Mr. D,     
-# student_id  test_id  mark  course_id  weight     name  teacher
+#      student_id  test_id  mark  course_id  weight     name  teacher
 # 7            2        2    87          1      40  Biology    Mr. D
 # 8            2        3    15          1      50  Biology    Mr. D
 # 9            2        7    40          3      10     Math   Mrs. C
 # 10           2        6    78          3      90     Math   Mrs. C
 # 11           2        1    78          1      10  Biology    Mr. D,     
-# student_id  test_id  mark  course_id  weight     name  teacher
+#      student_id  test_id  mark  course_id  weight     name  teacher
 # 12           3        3    95          1      50  Biology    Mr. D
 # 13           3        4    32          2      40  History   Mrs. P
 # 14           3        5    65          2      60  History   Mrs. P
