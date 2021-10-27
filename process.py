@@ -2,10 +2,8 @@ import csv
 import pandas as pd
 import numpy as np
 import json
-studentCSV = csv.DictReader(open("students.csv"))
-testCSV = csv.DictReader(open("tests.csv"))
-coursesCSV = csv.DictReader(open("courses.csv"))
-marksCSV = csv.DictReader(open("marks.csv"))
+
+
 
 
 def constructJsonValue(studentCSV):
@@ -59,43 +57,33 @@ def createCourseRecord(student_record_df):
     essential_info.insert(0, 'teacher', teacher_name_col)
     course_name_col = essential_info.pop('name')
     essential_info.insert(0, 'name', course_name_col)
-    
     essential_info = essential_info.rename(columns={0: 'courseAverage'})
     essential_info = essential_info.rename(columns={'course_id': 'id'})
     course_id_col = essential_info.pop('id')
     essential_info.insert(0, 'id', course_id_col)
     return essential_info
 
-      
-wholeList = constructJsonValue(studentCSV)
-#print(wholeList['id'])
-print(wholeList)
-temp = constructIndividualCourseList("marks.csv", "tests.csv","courses.csv")
-studen_courses_dict = {}
-#print(temp)    
-for i in temp:
-    df = createCourseRecord(i)
+def dumpJson(students_filename,marks_filename, tests_filename, courses_filename):
 
-    #print(df['student_id'].unique()[0])
-    studen_courses_dict[(df['student_id'].unique()[0])] = df.drop(['student_id'], axis=1)
+    studentCSV = csv.DictReader(open(students_filename))      
+    wholeList = constructJsonValue(studentCSV)
 
-#print(studen_courses_dict[2])
-
-for i in wholeList:
-    #.to_json(orient = 'records')
+    temp = constructIndividualCourseList(marks_filename, tests_filename, courses_filename)
+    studen_courses_dict = {}
     
-    print(studen_courses_dict[int(i['id'])])
-    jsdf = studen_courses_dict[int(i['id'])].to_json(orient = 'records')
-    i['Courses'] = json.loads(jsdf)
-    i['totalAverage'] = round((studen_courses_dict[int(i['id'])]['courseAverage']).mean(), 2)
+    for i in temp:
+        df = createCourseRecord(i)
+        studen_courses_dict[(df['student_id'].unique()[0])] = df.drop(['student_id'], axis=1)
+
+    for i in wholeList:
+        jsdf = studen_courses_dict[int(i['id'])].to_json(orient = 'records')
+        i['Courses'] = json.loads(jsdf)
+        i['totalAverage'] = round((studen_courses_dict[int(i['id'])]['courseAverage']).mean(), 2)
+
+    data = {}
+    data['students'] = wholeList
+    with open('result.json', 'w') as fp:
+        json.dump(data, fp, indent=2)
 
 
-
-#print(wholeList)##
-#json_object = json.dumps(wholeList, indent = 4) 
-print(wholeList)
-data = {}
-data['students'] = wholeList
-with open('result.json', 'w') as fp:
-    json.dump(data, fp, indent=2)
-#print(json_data)
+dumpJson("students.csv", "marks.csv", "tests.csv","courses.csv")
