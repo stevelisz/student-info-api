@@ -4,13 +4,55 @@ import numpy as np
 import json
 
 def checkTests(testsCSV):
-    pass
+    result = "pass"
+    df = pd.read_csv(testsCSV)
+    if df.isnull().values.any():
+        result = "null"
+    group = df.groupby('course_id')
+    groupDf = [v for k, v in df.groupby('course_id')]
+    if df['id'].min() < 0:
+        result = "id"
+    for i in groupDf:
+        if i['weight'].sum() != 100:
+            result = "weight"
+        
+    return result
+
 def checkStudents(studentsCSV):
-    pass
+    result = "pass"
+    df = pd.read_csv(studentsCSV)
+    if df.isnull().values.any():
+        result = "null"
+    if df['id'].min() < 0:
+        result = "id"
+    return result
+#print(checkStudents('students.csv'))
+
+    
 def checkCourses(coursesCSV):
-    pass
-def checkMarks(marksCSV):
-    pass
+    result = "pass"
+    df = pd.read_csv(coursesCSV)
+    if df.isnull().values.any():
+        result = "null"
+    if df['id'].min() < 0:
+        result = "id"
+    return result
+def checkMarks(marksCSV, studentsCSV, testsCSV):
+    result = "pass"
+    marksDf = pd.read_csv(marksCSV)
+    studentsDf = pd.read_csv(studentsCSV)
+    testsDf = pd.read_csv(testsCSV)
+    if marksDf.isnull().values.any():
+        result = "null"
+    for i in marksDf['test_id'].unique():
+        if i not in testsDf['id'].unique():
+            result = "notInTest"
+    for i in marksDf['student_id'].unique():
+        if i not in studentsDf['id'].unique():
+            result = "notInStu"
+    return result
+#print(checkMarks('marks.csv','students.csv','tests.csv'))
+
 
 #[{'id': 1, 'name': 'A', 'totalAverage': None, 'courses': []}, 
 # {'id': 2, 'name': 'B', 'totalAverage': None, 'courses': []}, 
@@ -98,6 +140,8 @@ def createCourseRecord(student_record_df):
     essential_info.insert(0, 'id', course_id_col)
     return essential_info
 
+
+
 def dumpJson(students_filename,marks_filename, tests_filename, courses_filename):
 
     studentCSV = csv.DictReader(open(students_filename))      
@@ -120,5 +164,42 @@ def dumpJson(students_filename,marks_filename, tests_filename, courses_filename)
     with open('result.json', 'w') as fp:
         json.dump(data, fp, indent=2)
 
+def check_run(students_filename,marks_filename, tests_filename, courses_filename):
+    result = ""
+    p = "pass"
+    if checkCourses(courses_filename )== p and checkStudents(students_filename) == p and checkTests(tests_filename) == p and checkMarks(marks_filename, students_filename, tests_filename )== p :
+        print("all check on JSON files passed.")
+        dumpJson(students_filename,marks_filename, tests_filename, courses_filename)
+        print("Result JSON file has been created. Please check root directory.")
+    else:
+        t = checkTests(tests_filename)
+        c = checkCourses(courses_filename)
+        s = checkStudents(students_filename)
+        m = checkMarks(marks_filename, students_filename, tests_filename)
+        print(t,c,s,m)
+        if t == "null":
+            result = "tests CSV file contains null values"
+        if t == "id":
+            result = "courses CSV file contains invalid ids"
+        if t == "weight":
+            result = "Invalid course weights"
 
-#dumpJson("students.csv", "marks.csv", "tests.csv","courses.csv")
+        if c == "null":
+            result = "courses CSV file contains null values"
+        if c == "id":
+            result = "courses CSV file contains invalid ids"
+
+        if s == "null":
+            result = "students CSV file contains null values"
+        if s == "id":
+            result = "students CSV file contains invalid ids"
+
+        if m == "null":
+            result = "marks CSV file contains null values"
+        if m == "notInTest":
+            result = "Cannot find test ID in test CSV."
+        if m == "notInStu":
+            result = "Cannot find student ID in students CSV."
+    return result
+
+print(check_run("students.csv", "marks.csv", "tests.csv","courses.csv"))
