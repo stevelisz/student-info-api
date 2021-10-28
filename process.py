@@ -184,9 +184,9 @@ def check_run(students_filename,marks_filename, tests_filename, courses_filename
         if m == "null":
             result = "marks CSV file contains null values"
         if m == "notInTest":
-            result = "Cannot find test ID in test CSV."
+            result = "marksCSV error, Cannot find test ID in test CSV."
         if m == "notInStu":
-            result = "Cannot find student ID in students CSV."
+            result = "marksCSV error, Cannot find student ID in students CSV."
 
 
         if t == "null":
@@ -194,7 +194,7 @@ def check_run(students_filename,marks_filename, tests_filename, courses_filename
         if t == "id":
             result = "tests CSV file contains invalid ids"
         if t == "weight":
-            result = "Invalid course weights"
+            result = "Invalid test weights"
 
         if c == "null":
             result = "courses CSV file contains null values"

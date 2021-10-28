@@ -47,7 +47,7 @@
     {
       "id": 3,
       "name": "C",
-      "totalAverage": 72.03,
+      "totalAverage": 61.05,
       "courses": [
         {
           "id": 1,
@@ -59,13 +59,7 @@
           "id": 2,
           "name": "History",
           "teacher": " Mrs. P",
-          "courseAverage": 51.8
-        },
-        {
-          "id": 3,
-          "name": "Math",
-          "teacher": " Mrs. C",
-          "courseAverage": 74.2
+          "courseAverage": 32.0
         }
       ]
     }
