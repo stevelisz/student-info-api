@@ -216,4 +216,4 @@ def check_run(students_filename,marks_filename, tests_filename, courses_filename
             json.dump(d, fp, indent=2)
 
 #check_run("students.csv", "marks.csv", "tests.csv","courses.csv")
-check_run("students.csv", "marks.csv", "tests.csv","courses.csv", "output")
+#check_run("students.csv", "marks.csv", "tests.csv","courses.csv", "output")
