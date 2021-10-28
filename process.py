@@ -176,11 +176,19 @@ def check_run(students_filename,marks_filename, tests_filename, courses_filename
         c = checkCourses(courses_filename)
         s = checkStudents(students_filename)
         m = checkMarks(marks_filename, students_filename, tests_filename)
-        print(t,c,s,m)
+        #print(t,c,s,m)
+        if m == "null":
+            result = "marks CSV file contains null values"
+        if m == "notInTest":
+            result = "Cannot find test ID in test CSV."
+        if m == "notInStu":
+            result = "Cannot find student ID in students CSV."
+
+
         if t == "null":
             result = "tests CSV file contains null values"
         if t == "id":
-            result = "courses CSV file contains invalid ids"
+            result = "tests CSV file contains invalid ids"
         if t == "weight":
             result = "Invalid course weights"
 
@@ -194,12 +202,11 @@ def check_run(students_filename,marks_filename, tests_filename, courses_filename
         if s == "id":
             result = "students CSV file contains invalid ids"
 
-        if m == "null":
-            result = "marks CSV file contains null values"
-        if m == "notInTest":
-            result = "Cannot find test ID in test CSV."
-        if m == "notInStu":
-            result = "Cannot find student ID in students CSV."
-    return result
 
-print(check_run("students.csv", "marks.csv", "tests.csv","courses.csv"))
+    if result:
+        d = {}
+        d['error'] = result
+        with open('result.json', 'w') as fp:
+            json.dump(d, fp, indent=2)
+
+check_run("students.csv", "marks.csv", "tests.csv","courses.csv")
