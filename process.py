@@ -2,6 +2,7 @@ import csv
 import pandas as pd
 import numpy as np
 import json
+import os
 
 def checkTests(testsCSV):
     result = "pass"
@@ -142,7 +143,7 @@ def createCourseRecord(student_record_df):
 
 
 
-def dumpJson(students_filename,marks_filename, tests_filename, courses_filename):
+def dumpJson(students_filename,marks_filename, tests_filename, courses_filename, output_path):
 
     studentCSV = csv.DictReader(open(students_filename))      
     wholeList = constructJsonValue(studentCSV)
@@ -161,15 +162,18 @@ def dumpJson(students_filename,marks_filename, tests_filename, courses_filename)
 
     data = {}
     data['students'] = wholeList
-    with open('result.json', 'w') as fp:
+    
+    filename = './' + output_path + '/result.json'
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+    with open(filename, 'w') as fp:
         json.dump(data, fp, indent=2)
 
-def check_run(students_filename,marks_filename, tests_filename, courses_filename):
+def check_run(students_filename,marks_filename, tests_filename, courses_filename ,output_path):
     result = ""
     p = "pass"
     if checkCourses(courses_filename )== p and checkStudents(students_filename) == p and checkTests(tests_filename) == p and checkMarks(marks_filename, students_filename, tests_filename )== p :
         print("all check on JSON files passed.")
-        dumpJson(students_filename,marks_filename, tests_filename, courses_filename)
+        dumpJson(students_filename,marks_filename, tests_filename, courses_filename, output_path)
         print("Result JSON file has been created. Please check root directory.")
     else:
         t = checkTests(tests_filename)
@@ -206,7 +210,10 @@ def check_run(students_filename,marks_filename, tests_filename, courses_filename
     if result:
         d = {}
         d['error'] = result
-        with open('result.json', 'w') as fp:
+        filename = './' + output_path + '/result.json'
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
+        with open(filename, 'w') as fp:
             json.dump(d, fp, indent=2)
 
-check_run("students.csv", "marks.csv", "tests.csv","courses.csv")
+#check_run("students.csv", "marks.csv", "tests.csv","courses.csv")
+check_run("students.csv", "marks.csv", "tests.csv","courses.csv", "output")
