@@ -7,9 +7,9 @@ from flask import Flask
 from flask_restful import Resource, Api, reqparse
 import ast
 
-def checkTests(testsCSV):
+def check_tests(tests_csv):
     result = "pass"
-    df = pd.read_csv(testsCSV)
+    df = pd.read_csv(tests_csv)
     if df.isnull().values.any():
         result = "null"
     group = df.groupby("course_id")
@@ -23,9 +23,9 @@ def checkTests(testsCSV):
     return result
 
 
-def checkStudents(studentsCSV):
+def check_students(students_csv):
     result = "pass"
-    df = pd.read_csv(studentsCSV)
+    df = pd.read_csv(students_csv)
     if df.isnull().values.any():
         result = "null"
     if df["id"].min() < 0:
@@ -33,12 +33,11 @@ def checkStudents(studentsCSV):
     return result
 
 
-# print(checkStudents('students.csv'))
 
 
-def checkCourses(coursesCSV):
+def check_courses(courses_csv):
     result = "pass"
-    df = pd.read_csv(coursesCSV)
+    df = pd.read_csv(courses_csv)
     if df.isnull().values.any():
         result = "null"
     if df["id"].min() < 0:
@@ -46,31 +45,31 @@ def checkCourses(coursesCSV):
     return result
 
 
-def checkMarks(marksCSV, studentsCSV, testsCSV):
+def check_marks(marks_csv, students_csv, tests_csv):
     result = "pass"
-    marksDf = pd.read_csv(marksCSV)
-    studentsDf = pd.read_csv(studentsCSV)
-    testsDf = pd.read_csv(testsCSV)
-    if marksDf.isnull().values.any():
+    marks_df = pd.read_csv(marks_csv)
+    students_df = pd.read_csv(students_csv)
+    tests_df = pd.read_csv(tests_csv)
+    if marks_df.isnull().values.any():
         result = "null"
-    for i in marksDf["test_id"].unique():
-        if i not in testsDf["id"].unique():
+    for i in marks_df["test_id"].unique():
+        if i not in tests_df["id"].unique():
             result = "notInTest"
-    for i in marksDf["student_id"].unique():
-        if i not in studentsDf["id"].unique():
+    for i in marks_df["student_id"].unique():
+        if i not in students_df["id"].unique():
             result = "notInStu"
     return result
 
 
-# print(checkMarks('marks.csv','students.csv','tests.csv'))
+# print(check_marks('marks.csv','students.csv','tests.csv'))
 
 
 # [{'id': 1, 'name': 'A', 'totalAverage': None, 'courses': []},
 # {'id': 2, 'name': 'B', 'totalAverage': None, 'courses': []},
 # {'id': 3, 'name': 'C', 'totalAverage': None, 'courses': []}]
-def constructJsonValue(studentCSV):
+def construct_json_value(student_csv):
     students = []
-    for row in studentCSV:
+    for row in student_csv:
         temp_student_index = row["id"]
         row["id"] = int(temp_student_index)
         students.append(row)
@@ -103,10 +102,10 @@ def constructJsonValue(studentCSV):
 # 16           3        6    78          3      90     Math   Mrs. C
 # 17           3        2    87          1      40  Biology    Mr. D
 # 18           3        7    40          3      10     Math   Mrs. C]
-def constructIndividualCourseList(marksCSV, testsCSV, coursesCSV):
-    marks_df = pd.read_csv(marksCSV)
-    tests_df = pd.read_csv(testsCSV)
-    courses_df = pd.read_csv(coursesCSV)
+def construct_individual_courselist(marks_csv, tests_csv, courses_csv):
+    marks_df = pd.read_csv(marks_csv)
+    tests_df = pd.read_csv(tests_csv)
+    courses_df = pd.read_csv(courses_csv)
     tests_df = tests_df.rename(columns={"id": "test_id"})
     courses_df = courses_df.rename(columns={"id": "course_id"})
     df = pd.merge(marks_df, tests_df, on="test_id")
@@ -135,7 +134,7 @@ def w_avg(df, values, weights):
 # 0   1  Biology    Mr. D           90.1           3
 # 1   2  History   Mrs. P           51.8           3
 # 2   3     Math   Mrs. C           74.2           3
-def createCourseRecord(student_record_df):
+def create_course_record(student_record_df):
     sorted_by_course = student_record_df.sort_values(["course_id"]).reset_index(
         drop=True
     )
@@ -157,25 +156,25 @@ def createCourseRecord(student_record_df):
     return essential_info
 
 
-def dumpJson(
+def dump_json(
     students_filename, marks_filename, tests_filename, courses_filename, output_path
 ):
 
-    studentCSV = csv.DictReader(open(students_filename))
-    wholeList = constructJsonValue(studentCSV)
+    student_csv = csv.DictReader(open(students_filename))
+    whole_list = construct_json_value(student_csv)
 
-    individualCourseList = constructIndividualCourseList(
+    individual_course_List = construct_individual_courselist(
         marks_filename, tests_filename, courses_filename
     )
     studen_courses_dict = {}
 
-    for individualCourse in individualCourseList:
-        df = createCourseRecord(individualCourse)
+    for individual_course in individual_course_List:
+        df = create_course_record(individual_course)
         studen_courses_dict[(df["student_id"].unique()[0])] = df.drop(
             ["student_id"], axis=1
         )
 
-    for student in wholeList:
+    for student in whole_list:
         jsdf = studen_courses_dict[int(student["id"])].to_json(orient="records")
         student["courses"] = json.loads(jsdf)
         student["totalAverage"] = round(
@@ -183,7 +182,7 @@ def dumpJson(
         )
 
     data = {}
-    data["students"] = wholeList
+    data["students"] = whole_list
 
     filename = "./" + output_path + "/result.json"
     os.makedirs(os.path.dirname(filename), exist_ok=True)
@@ -197,13 +196,13 @@ def check_run(
     result = ""
     p = "pass"
     if (
-        checkCourses(courses_filename) == p
-        and checkStudents(students_filename) == p
-        and checkTests(tests_filename) == p
-        and checkMarks(marks_filename, students_filename, tests_filename) == p
+        check_courses(courses_filename) == p
+        and check_students(students_filename) == p
+        and check_tests(tests_filename) == p
+        and check_marks(marks_filename, students_filename, tests_filename) == p
     ):
         print("all check on JSON files passed.")
-        dumpJson(
+        dump_json(
             students_filename,
             marks_filename,
             tests_filename,
@@ -212,10 +211,10 @@ def check_run(
         )
         print("Result JSON file has been created. Please check output directory.")
     else:
-        t = checkTests(tests_filename)
-        c = checkCourses(courses_filename)
-        s = checkStudents(students_filename)
-        m = checkMarks(marks_filename, students_filename, tests_filename)
+        t = check_tests(tests_filename)
+        c = check_courses(courses_filename)
+        s = check_students(students_filename)
+        m = check_marks(marks_filename, students_filename, tests_filename)
         # print(t,c,s,m)
         if m == "null":
             result = "marks CSV file contains null values"
@@ -256,21 +255,21 @@ def dump_json_api(
     students_filename, marks_filename, tests_filename, courses_filename
 ):
 
-    studentCSV = csv.DictReader(open(students_filename))
-    wholeList = constructJsonValue(studentCSV)
+    student_csv = csv.DictReader(open(students_filename))
+    whole_list = construct_json_value(student_csv)
 
-    individualCourseList = constructIndividualCourseList(
+    individual_course_List = construct_individual_courselist(
         marks_filename, tests_filename, courses_filename
     )
     studen_courses_dict = {}
 
-    for individualCourse in individualCourseList:
-        df = createCourseRecord(individualCourse)
+    for individual_course in individual_course_List:
+        df = create_course_record(individual_course)
         studen_courses_dict[(df["student_id"].unique()[0])] = df.drop(
             ["student_id"], axis=1
         )
-    print(studen_courses_dict)
-    for student in wholeList:
+    #print(studen_courses_dict)
+    for student in whole_list:
         if int(student["id"]) in studen_courses_dict:
             jsdf = studen_courses_dict[int(student["id"])].to_json(orient="records")
             student["courses"] = json.loads(jsdf)
@@ -279,7 +278,7 @@ def dump_json_api(
             )
 
     data = {}
-    data["students"] = wholeList
+    data["students"] = whole_list
 
     return data
 
@@ -291,10 +290,10 @@ def check_run_api(
     result = ""
     p = "pass"
     if (
-        checkCourses(courses_filename) == p
-        and checkStudents(students_filename) == p
-        and checkTests(tests_filename) == p
-        and checkMarks(marks_filename, students_filename, tests_filename) == p
+        check_courses(courses_filename) == p
+        and check_students(students_filename) == p
+        and check_tests(tests_filename) == p
+        and check_marks(marks_filename, students_filename, tests_filename) == p
     ):
         print("all check on JSON files passed.")
         return dump_json_api(
@@ -304,10 +303,10 @@ def check_run_api(
             courses_filename,
         )
     else:
-        t = checkTests(tests_filename)
-        c = checkCourses(courses_filename)
-        s = checkStudents(students_filename)
-        m = checkMarks(marks_filename, students_filename, tests_filename)
+        t = check_tests(tests_filename)
+        c = check_courses(courses_filename)
+        s = check_students(students_filename)
+        m = check_marks(marks_filename, students_filename, tests_filename)
         # print(t,c,s,m)
         if m == "null":
             result = "marks CSV file contains null values"
