@@ -169,6 +169,14 @@ def construct_student_course_dict(individual_course_List):
         ) #drop the student ID column in the course record since we already it.
     return studen_courses_dict
 
+def construct_final_json(studen_courses_dict, whole_list):
+    for student in whole_list:
+        if int(student["id"]) in studen_courses_dict:
+            jsdf = studen_courses_dict[int(student["id"])].to_json(orient="records")
+            student["courses"] = json.loads(jsdf)
+            student["totalAverage"] = round(
+                (studen_courses_dict[int(student["id"])]["courseAverage"]).mean(), 2
+            )
 
 #create a JSON file with all the provided files and requirements.
 def dump_json_api(
@@ -188,13 +196,7 @@ def dump_json_api(
     studen_courses_dict = construct_student_course_dict(individual_course_List)
 
     #calculate course records for every student and calcuate total average grade.
-    for student in whole_list:
-        if int(student["id"]) in studen_courses_dict:
-            jsdf = studen_courses_dict[int(student["id"])].to_json(orient="records")
-            student["courses"] = json.loads(jsdf)
-            student["totalAverage"] = round(
-                (studen_courses_dict[int(student["id"])]["courseAverage"]).mean(), 2
-            )
+    construct_final_json(studen_courses_dict, whole_list)
 
     data = {}
     data["students"] = whole_list
