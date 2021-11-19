@@ -140,6 +140,10 @@ class Courses(Resource):
         return {'data': json.loads(self.js_data)}, 200
 api.add_resource(Courses, '/courses')
 
+@app.route('/')
+def index():
+  return "<h1>homepage</h1>"
+
 if __name__ == '__main__':
     app.run()
 
