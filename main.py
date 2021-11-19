@@ -10,6 +10,9 @@ import json
 app = Flask(__name__)
 api = Api(app)
 
+#Created Flask app to host process.py script as a service on an endpoint.
+
+#Records endpoint, to get the final result.
 class Records(Resource):
     
     def get(self):
@@ -18,7 +21,11 @@ api.add_resource(Records, '/records')
 
 
 
-
+#Students endpoint. 
+# To get students.csv
+# Post new students to students.csv
+# Update students to students.csv
+# Delete students from students.csv
 class Students(Resource):
     def __init__(self):
         self.data = pd.read_csv("students.csv")
@@ -103,7 +110,7 @@ api.add_resource(Students, '/students')
 
 
 
-
+#Marks endpoint, to get the marks.csv.
 class Marks(Resource):
     def __init__(self):
         self.data = pd.read_csv("marks.csv")
@@ -113,7 +120,7 @@ class Marks(Resource):
 api.add_resource(Marks, '/marks')
 
 
-
+#Tests endpoint, to get the tests.csv.
 class Tests(Resource):
     def __init__(self):
         self.data = pd.read_csv("tests.csv")
@@ -124,7 +131,7 @@ api.add_resource(Tests, '/tests')
 
 
 
-
+#Courses endpoint, to get the courses.csv.
 class Courses(Resource):
     def __init__(self):
         self.data = pd.read_csv("courses.csv")
