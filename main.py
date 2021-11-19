@@ -16,7 +16,8 @@ api = Api(app)
 class Records(Resource):
     
     def get(self):
-        return check_run_api("students.csv", "marks.csv", "tests.csv", "courses.csv")
+        records = check_run_api("students.csv", "marks.csv", "tests.csv", "courses.csv")
+        return {'data': records}
 api.add_resource(Records, '/records')
 
 

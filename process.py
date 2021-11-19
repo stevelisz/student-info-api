@@ -159,7 +159,15 @@ def create_course_record(student_record_df):
     essential_info.insert(0, "id", course_id_col)
     return essential_info
 
+def construct_student_course_dict(individual_course_List):
+    studen_courses_dict = {}
 
+    for individual_course in individual_course_List:
+        df = create_course_record(individual_course)
+        studen_courses_dict[(df["student_id"].unique()[0])] = df.drop(
+            ["student_id"], axis=1
+        ) #drop the student ID column in the course record since we already it.
+    return studen_courses_dict
 
 
 #create a JSON file with all the provided files and requirements.
@@ -177,13 +185,7 @@ def dump_json_api(
 
     #create dictionary to map student ID with courses they took so we do not get O(N^2) time complexity.
     #Trade off between time and space, we choose time here.
-    studen_courses_dict = {}
-
-    for individual_course in individual_course_List:
-        df = create_course_record(individual_course)
-        studen_courses_dict[(df["student_id"].unique()[0])] = df.drop(
-            ["student_id"], axis=1
-        ) #drop the student ID column in the course record since we already it.
+    studen_courses_dict = construct_student_course_dict(individual_course_List)
 
     #calculate course records for every student and calcuate total average grade.
     for student in whole_list:
